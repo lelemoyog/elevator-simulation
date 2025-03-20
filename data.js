@@ -223,6 +223,40 @@ handleElevatorRequest(elevator_ID,{
 
 }
 }
+// Map elevator Firestore IDs to their corresponding elements
+const elevatorMapping = {
+    "nEFOlhdgHbhcSWCJb5y3": "elevator1",
+    "oAo68NfSDZm66YhHfSCM": "elevator2",
+    "ou45vwSmWIu7YjSvmKkM": "elevator3"
+};
+
+// Function to open an elevator
+function openElevator(elevatorId) {
+    let elevatorElement = document.getElementById(elevatorMapping[elevatorId]);
+    if (!elevatorElement) return;
+
+    elevatorElement.src = "assets/img/elevator-state-1-opening.gif";
+
+    // Change to open state after 4 seconds
+    setTimeout(() => {
+        elevatorElement.src = "assets/img/elevator-state-2-open.jpg";
+    }, 4000);
+}
+
+// Function to close an elevator
+function closeElevator(elevatorId) {
+    let elevatorElement = document.getElementById(elevatorMapping[elevatorId]);
+    if (!elevatorElement) return;
+
+    elevatorElement.src = "assets/img/elevator-state-3-closing.gif";
+
+    // Change to closed state after 4 seconds
+    setTimeout(() => {
+        elevatorElement.src = "assets/img/elevator-state-4-closed.jpg";
+    }, 4000);
+}
+
+// Function to handle elevator request and control door behavior
 async function handleElevatorRequest(elevatorId, request) {
     const elevatorRef = doc(db, "elevators", elevatorId);
     const requestRef = doc(db, "requests", request.id);
@@ -236,16 +270,25 @@ async function handleElevatorRequest(elevatorId, request) {
     let requestCurrentFloor = parseInt(request.currentFloor);
     let requestDestination = parseInt(request.goingToFloor);
 
-    // Move the elevator to the request's current floor if it's not already there
+    // Move to request's current floor if not there yet
     if (elevatorCurrentFloor !== requestCurrentFloor) {
         await moveElevator(elevatorId, elevatorCurrentFloor, requestCurrentFloor);
     }
+
+    // Open the elevator doors
+    openElevator(elevatorId);
 
     // Stop for 8 seconds to allow the user to enter
     console.log(`Elevator ${elevatorId} stopped at floor ${requestCurrentFloor} for 8 seconds...`);
     await new Promise(resolve => setTimeout(resolve, 8000));
 
-    // Move the elevator to the request's destination floor
+    // Close the elevator doors
+    closeElevator(elevatorId);
+
+    // Wait for 4 seconds (door closing animation time)
+    await new Promise(resolve => setTimeout(resolve, 4000));
+
+    // Move to request's destination floor
     await moveElevator(elevatorId, requestCurrentFloor, requestDestination);
 
     // Mark request as complete
@@ -253,6 +296,15 @@ async function handleElevatorRequest(elevatorId, request) {
         state: "off",
         currentFloor: requestDestination
     });
+
+    // Open doors at the destination
+    openElevator(elevatorId);
+
+    // Stop for 8 seconds at the destination
+    await new Promise(resolve => setTimeout(resolve, 8000));
+
+    // Close doors after reaching destination
+    closeElevator(elevatorId);
 }
 
 // Helper function to move the elevator between floors
@@ -277,6 +329,7 @@ async function moveElevator(elevatorId, startFloor, endFloor) {
         });
     }
 }
+
 
 
 function getMostEfficientElevator(elevatorA, elevatorB, elevatorC, accessingFloor, selectedFloor) {
