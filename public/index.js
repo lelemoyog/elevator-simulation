@@ -17,7 +17,7 @@ const elevator_down = document.getElementById('elevator_down');
 
 
 //open elevator
-openElevator3();
+
 function openElevator1(){
     document.getElementById('elevator1').src = "assets/img/elevator-state-1-opening.gif"
     // Change the elevator state after 4000ms
@@ -42,9 +42,11 @@ setTimeout(function() {
 }, 4000);
 }
 
-
+window.onload = function() {
+    document.body.style.zoom = "75%";
+};
 //cloze elevator
-closeEvevator1();
+closeEvevator1()
 function closeEvevator1(){
     document.getElementById('elevator1').src = "assets/img/elevator-state-3-closing.gif"
     // Change the elevator state after 4000ms
@@ -52,7 +54,7 @@ setTimeout(function() {
     document.getElementById('elevator1').src = "assets/img/elevator-state-4-closed.jpg";
 }, 4000);
 }
-
+closeEvevator2()
 function closeEvevator2(){
     document.getElementById('elevator2').src = "assets/img/elevator-state-3-closing.gif"
     // Change the elevator state after 4000ms
@@ -60,7 +62,7 @@ setTimeout(function() {
     document.getElementById('elevator2').src = "assets/img/elevator-state-4-closed.jpg";
 }, 4000);
 }
-
+closeEvevator3()
 function closeEvevator3(){
     document.getElementById('elevator3').src = "assets/img/elevator-state-3-closing.gif"
     // Change the elevator state after 4000ms

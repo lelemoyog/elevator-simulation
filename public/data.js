@@ -10,12 +10,12 @@ import { getFirestore, enableIndexedDbPersistence, addDoc, collection, getDocs, 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
     apiKey: "AIzaSyD3UWGcYo66AuqF3CJO_GpaWZt7jjD_bso",
-  authDomain: "elevetor-sim.firebaseapp.com",
-  projectId: "elevetor-sim",
-  storageBucket: "elevetor-sim.firebasestorage.app",
-  messagingSenderId: "941580080164",
-  appId: "1:941580080164:web:a2d9de1fa8fc671e3634b1",
-  measurementId: "G-4M3RTT4KNX"
+    authDomain: "elevetor-sim.firebaseapp.com",
+    projectId: "elevetor-sim",
+    storageBucket: "elevetor-sim.firebasestorage.app",
+    messagingSenderId: "941580080164",
+    appId: "1:941580080164:web:a2d9de1fa8fc671e3634b1",
+    measurementId: "G-4M3RTT4KNX"
 };
 
 
@@ -88,7 +88,7 @@ if (playerID == null) {
 }
 
 if (playerID !== null) {
-   
+
     getDoc(doc(db, "requests", playerID)).then(docSnap => {
         document.getElementById('current-floor').innerHTML = docSnap.data().currentFloor;
     })
@@ -116,7 +116,7 @@ function addPlayer() {
                         elevatorID: "",
                         currentFloor: 0,
                         goingToFloor: 0,
-                        state:"off"
+                        state: "off"
                     })
                     document.getElementById('current-floor').innerText = 0;
                     updateDoc(doc(db, "players", docRef.id), {
@@ -127,6 +127,8 @@ function addPlayer() {
                             text: 'Player added successfully.',
                             icon: 'success',
                             confirmButtonText: 'OK'
+                        }).then(() => {
+                            window.location.reload();
                         });
                     })
                 })
@@ -137,91 +139,92 @@ function addPlayer() {
 }
 
 
-document.getElementById('0').addEventListener('click',()=>{
+document.getElementById('0').addEventListener('click', () => {
     updateFloor(0);
 })
-document.getElementById('1').addEventListener('click',()=>{
+document.getElementById('1').addEventListener('click', () => {
     updateFloor(1);
 })
-document.getElementById('2').addEventListener('click',()=>{
+document.getElementById('2').addEventListener('click', () => {
     updateFloor(0);
 })
-document.getElementById('3').addEventListener('click',()=>{
+document.getElementById('3').addEventListener('click', () => {
     updateFloor(3);
 })
-document.getElementById('4').addEventListener('click',()=>{
+document.getElementById('4').addEventListener('click', () => {
     updateFloor(4);
 })
-document.getElementById('5').addEventListener('click',()=>{
+document.getElementById('5').addEventListener('click', () => {
     updateFloor(5);
 })
-document.getElementById('6').addEventListener('click',()=>{
+document.getElementById('6').addEventListener('click', () => {
     updateFloor(6);
 })
-document.getElementById('7').addEventListener('click',()=>{
+document.getElementById('7').addEventListener('click', () => {
     updateFloor(7);
 })
-document.getElementById('8').addEventListener('click',()=>{
+document.getElementById('8').addEventListener('click', () => {
     updateFloor(8);
 })
-document.getElementById('9').addEventListener('click',()=>{
+document.getElementById('9').addEventListener('click', () => {
     updateFloor(9);
 })
-document.getElementById('10').addEventListener('click',()=>{
+document.getElementById('10').addEventListener('click', () => {
     updateFloor(10);
 })
 
 // Function to update the floor and save it to local storage
 function updateFloor(floor) {
-  let mostEfficientElevator = getMostEfficientElevator(document.getElementById("floorElevator1").innerText,document.getElementById("floorElevator2").innerText,document.getElementById("floorElevator3").innerText,document.getElementById('current-floor').innerText,floor);
-  if (playerID == null) {
-    addPlayer()
-}else{
-  var elevator_ID = "";
-  if(mostEfficientElevator == "A"){
-    elevator_ID = "nEFOlhdgHbhcSWCJb5y3"
-    if(parseInt(document.getElementById('current-floor').innerText) < parseInt(floor) ){
-        document.getElementById('elevator_up1').src = "assets/img/elevator_upSelected.png"
-     }
-     if(parseInt(document.getElementById('current-floor').innerText) > parseInt(floor) ){
-        document.getElementById('elevator_down1').src = "assets/img/elevator_downSelected.png"
-     }
-  }
-  if(mostEfficientElevator == "B"){
-    elevator_ID = "oAo68NfSDZm66YhHfSCM"
-   
-    if(parseInt(document.getElementById('current-floor').innerText) < parseInt(floor) ){
-        document.getElementById('elevator_up2').src = "assets/img/elevator_upSelected.png"
-     }
-     if(parseInt(document.getElementById('current-floor').innerText) > parseInt(floor) ){
-        document.getElementById('elevator_down2').src = "assets/img/elevator_downSelected.png"
-     }
-  }
-  if(mostEfficientElevator == "C"){
-    elevator_ID = "ou45vwSmWIu7YjSvmKkM"
-    if(parseInt(document.getElementById('current-floor').innerText) < parseInt(floor) ){
-        document.getElementById('elevator_up3').src = "assets/img/elevator_upSelected.png"
-     }
-     if(parseInt(document.getElementById('current-floor').innerText) > parseInt(floor) ){
-        document.getElementById('elevator_down3').src = "assets/img/elevator_downSelected.png"
-     }
-  }
-  setDoc(doc(db, "requests", playerID), {
-    id: playerID,
-    elevatorID: elevator_ID,
-    currentFloor: parseInt(document.getElementById('current-floor').innerText),
-    goingToFloor: parseInt(floor),
-    state:"awaiting"
-})
-handleElevatorRequest(elevator_ID,{
-    id: playerID,
-    elevatorID: elevator_ID,
-    currentFloor: parseInt(document.getElementById('current-floor').innerText),
-    goingToFloor: parseInt(floor),
-    state:"awaiting"
-});
+    let mostEfficientElevator = getMostEfficientElevator(document.getElementById("floorElevator1").innerText, document.getElementById("floorElevator2").innerText, document.getElementById("floorElevator3").innerText, document.getElementById('current-floor').innerText, floor);
+    if (playerID == null) {
+        addPlayer()
+    } else {
+        var elevator_ID = "";
+        if (mostEfficientElevator == "A") {
+            elevator_ID = "nEFOlhdgHbhcSWCJb5y3"
+            if (parseInt(document.getElementById('current-floor').innerText) < parseInt(floor)) {
+                document.getElementById('elevator_up1').src = "assets/img/elevator_upSelected.png"
+            }
+            if (parseInt(document.getElementById('current-floor').innerText) > parseInt(floor)) {
+                document.getElementById('elevator_down1').src = "assets/img/elevator_downSelected.png"
+            }
+        }
+        if (mostEfficientElevator == "B") {
+            elevator_ID = "oAo68NfSDZm66YhHfSCM"
 
-}
+            if (parseInt(document.getElementById('current-floor').innerText) < parseInt(floor)) {
+                document.getElementById('elevator_up2').src = "assets/img/elevator_upSelected.png"
+            }
+            if (parseInt(document.getElementById('current-floor').innerText) > parseInt(floor)) {
+                document.getElementById('elevator_down2').src = "assets/img/elevator_downSelected.png"
+            }
+        }
+        if (mostEfficientElevator == "C") {
+            elevator_ID = "ou45vwSmWIu7YjSvmKkM"
+            if (parseInt(document.getElementById('current-floor').innerText) < parseInt(floor)) {
+                document.getElementById('elevator_up3').src = "assets/img/elevator_upSelected.png"
+            }
+            if (parseInt(document.getElementById('current-floor').innerText) > parseInt(floor)) {
+                document.getElementById('elevator_down3').src = "assets/img/elevator_downSelected.png"
+            }
+        }
+        setDoc(doc(db, "requests", playerID), {
+            id: playerID,
+            elevatorID: elevator_ID,
+            currentFloor: parseInt(document.getElementById('current-floor').innerText),
+            goingToFloor: parseInt(floor),
+            state: "awaiting"
+        })
+        //get requests and put them in an array
+        let requests = [];
+        getDocs(query(collection(db, "requests"),where("state", "in", ["awaiting", "on"]))).then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                requests.push(doc.data());
+            });
+
+            handleElevatorRequests(elevator_ID,requests);
+        })
+    }
 }
 // Map elevator Firestore IDs to their corresponding elements
 const elevatorMapping = {
@@ -239,6 +242,12 @@ function openElevator(elevatorId) {
 
     // Change to open state after 4 seconds
     setTimeout(() => {
+        document.getElementById('elevator_up1').src = "assets/img/elevator_up.png"
+        document.getElementById('elevator_down1').src = "assets/img/elevator_down.png"
+        document.getElementById('elevator_up2').src = "assets/img/elevator_up.png"
+        document.getElementById('elevator_down2').src = "assets/img/elevator_down.png"
+        document.getElementById('elevator_up3').src = "assets/img/elevator_up.png"
+        document.getElementById('elevator_down3').src = "assets/img/elevator_down.png"
         elevatorElement.src = "assets/img/elevator-state-2-open.jpg";
     }, 4000);
 }
@@ -256,62 +265,70 @@ function closeElevator(elevatorId) {
     }, 4000);
 }
 
-// Function to handle elevator request and control door behavior
-async function handleElevatorRequest(elevatorId, request) {
-    const elevatorRef = doc(db, "elevators", elevatorId);
-    const requestRef = doc(db, "requests", request.id);
+// Function to handle multiple elevator requests intelligently
+async function handleElevatorRequests(elevatorId, requests) {
+    if (requests.length === 0) return; // No requests to process
 
-    // Fetch the elevator's current floor
+    const elevatorRef = doc(db, "elevators", elevatorId);
     const elevatorSnap = await getDoc(elevatorRef);
     if (!elevatorSnap.exists()) return;
 
     let elevatorData = elevatorSnap.data();
     let elevatorCurrentFloor = elevatorData.floor;
-    let requestCurrentFloor = parseInt(request.currentFloor);
-    let requestDestination = parseInt(request.goingToFloor);
 
-    // Move to request's current floor if not there yet
-    if (elevatorCurrentFloor !== requestCurrentFloor) {
-        await moveElevator(elevatorId, elevatorCurrentFloor, requestCurrentFloor);
+    //filter requests to only those with the same elevator ID
+    requests = requests.filter(request => request.elevatorID === elevatorId);
+
+    // Process each request individually to ensure correct order
+    for (let request of requests) {
+        let requestCurrentFloor = parseInt(request.currentFloor);
+        let requestDestination = parseInt(request.goingToFloor);
+
+        // **Step 1: Move to Passenger's Location**
+        if (elevatorCurrentFloor !== requestCurrentFloor) {
+            console.log(`Elevator ${elevatorId} moving to floor ${requestCurrentFloor} to pick up passenger...`);
+            await moveElevatorSmoothly(elevatorId, elevatorCurrentFloor, requestCurrentFloor);
+            elevatorCurrentFloor = requestCurrentFloor; // Update current floor after reaching
+        }
+
+        // **Step 2: Open doors for passenger**
+        openElevator(elevatorId);
+        console.log(`Elevator ${elevatorId} stopped at floor ${requestCurrentFloor} for 8 seconds to pick up passenger.`);
+        await new Promise(resolve => setTimeout(resolve, 8000)); // Stop for 8 seconds
+
+        // **Step 3: Close doors after pickup**
+        closeElevator(elevatorId);
+        await new Promise(resolve => setTimeout(resolve, 4000)); // Door closing animation delay
+
+        // **Step 4: Move to the Passenger’s Destination**
+        console.log(`Elevator ${elevatorId} moving from ${requestCurrentFloor} to ${requestDestination}...`);
+        await moveElevatorSmoothly(elevatorId, requestCurrentFloor, requestDestination);
+        
+        // **Step 5: Open doors for passenger drop-off**
+        openElevator(elevatorId);
+        console.log(`Passenger dropped off at floor ${requestDestination}. Waiting 8 seconds before closing doors.`);
+        await new Promise(resolve => setTimeout(resolve, 8000));
+
+        // **Step 6: Close doors after drop-off**
+        closeElevator(elevatorId);
+        await new Promise(resolve => setTimeout(resolve, 4000)); // Door closing animation delay
+
+        // **Step 7: Update Firestore to mark request as complete**
+        await updateDoc(doc(db, "requests", request.id), {
+            state: "off",
+            currentFloor: requestDestination
+        });
+
+        // Update the elevator's last known floor
+        elevatorCurrentFloor = requestDestination;
     }
-
-    // Open the elevator doors
-    openElevator(elevatorId);
-
-    // Stop for 8 seconds to allow the user to enter
-    console.log(`Elevator ${elevatorId} stopped at floor ${requestCurrentFloor} for 8 seconds...`);
-    await new Promise(resolve => setTimeout(resolve, 8000));
-
-    // Close the elevator doors
-    closeElevator(elevatorId);
-
-    // Wait for 4 seconds (door closing animation time)
-    await new Promise(resolve => setTimeout(resolve, 4000));
-
-    // Move to request's destination floor
-    await moveElevator(elevatorId, requestCurrentFloor, requestDestination);
-
-    // Mark request as complete
-    await updateDoc(requestRef, {
-        state: "off",
-        currentFloor: requestDestination
-    });
-
-    // Open doors at the destination
-    openElevator(elevatorId);
-
-    // Stop for 8 seconds at the destination
-    await new Promise(resolve => setTimeout(resolve, 8000));
-
-    // Close doors after reaching destination
-    closeElevator(elevatorId);
 }
 
-// Helper function to move the elevator between floors
-async function moveElevator(elevatorId, startFloor, endFloor) {
+// Function to move the elevator smoothly through each floor
+async function moveElevatorSmoothly(elevatorId, startFloor, endFloor) {
     const elevatorRef = doc(db, "elevators", elevatorId);
     let direction = startFloor < endFloor ? "up" : "down";
-
+    
     console.log(`Moving elevator ${elevatorId} from floor ${startFloor} to ${endFloor}...`);
 
     let floors = direction === "up"
@@ -323,12 +340,27 @@ async function moveElevator(elevatorId, startFloor, endFloor) {
 
         console.log(`Elevator ${elevatorId} reached floor ${floor}`);
 
+        // Update Firestore in real-time
         await updateDoc(elevatorRef, {
             floor: floor,
             direction: direction
         });
+
+        // Update UI to show the elevator moving (if applicable)
+        updateElevatorUI(elevatorId, floor);
     }
 }
+
+// Function to update the UI (if you have an elevator element)
+function updateElevatorUI(elevatorId, floor) {
+    let elevatorElement = document.getElementById(elevatorId);
+    if (elevatorElement) {
+        elevatorElement.innerText = `Elevator ${elevatorId} is at floor ${floor}`;
+    }
+}
+
+
+
 
 
 
