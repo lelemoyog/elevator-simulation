@@ -24,43 +24,65 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 let playerID = localStorage.getItem("playerID");
 
-onSnapshot(query(collection(db, "elevators"), where("id", "==", "nEFOlhdgHbhcSWCJb5y3")), (doc) => {
-    if (doc) {
-        doc.docChanges().forEach((change) => {
-            if (change.type === "modified") {
-                document.getElementById("directionElevato1").innerHTML = "Going " + change.doc.data().direction;
-                document.getElementById("floorElevator1").innerHTML = change.doc.data().floor;
-            }
-        });
-    }
-});
-onSnapshot(query(collection(db, "elevators"), where("id", "==", "oAo68NfSDZm66YhHfSCM")), (doc) => {
-    if (doc) {
-        doc.docChanges().forEach((change) => {
-            if (change.type === "modified") {
-                document.getElementById("directionElevato2").innerHTML = "Going " + change.doc.data().direction;
-                document.getElementById("floorElevator2").innerHTML = change.doc.data().floor;
-            }
-        });
-    }
-});
+// onSnapshot(query(collection(db, "elevators"), where("id", "==", "nEFOlhdgHbhcSWCJb5y3")), (doc) => {
+//     if (doc) {
+//         doc.docChanges().forEach((change) => {
+//             if (change.type === "modified") {
+//                 document.getElementById("directionElevato1").innerHTML = "Going " + change.doc.data().direction;
+//                 document.getElementById("floorElevator1").innerHTML = change.doc.data().floor;
+//             }
+//         });
+//     }
+// });
+// onSnapshot(query(collection(db, "elevators"), where("id", "==", "oAo68NfSDZm66YhHfSCM")), (doc) => {
+//     if (doc) {
+//         doc.docChanges().forEach((change) => {
+//             if (change.type === "modified") {
+//                 document.getElementById("directionElevato2").innerHTML = "Going " + change.doc.data().direction;
+//                 document.getElementById("floorElevator2").innerHTML = change.doc.data().floor;
+//             }
+//         });
+//     }
+// });
 
-onSnapshot(query(collection(db, "elevators"), where("id", "==", "ou45vwSmWIu7YjSvmKkM")), (doc) => {
-    if (doc) {
-        doc.docChanges().forEach((change) => {
-            if (change.type === "modified") {
-                document.getElementById("directionElevato3").innerHTML = "Going " + change.doc.data().direction;
-                document.getElementById("floorElevator3").innerHTML = change.doc.data().floor;
-            }
-        });
-    }
-});
+// onSnapshot(query(collection(db, "elevators"), where("id", "==", "ou45vwSmWIu7YjSvmKkM")), (doc) => {
+//     if (doc) {
+//         doc.docChanges().forEach((change) => {
+//             if (change.type === "modified") {
+//                 document.getElementById("directionElevato3").innerHTML = "Going " + change.doc.data().direction;
+//                 document.getElementById("floorElevator3").innerHTML = change.doc.data().floor;
+//             }
+//         });
+//     }
+// });
 
 onSnapshot(query(collection(db, "requests"), where("id", "==", playerID)), (doc) => {
     if (doc) {
+        console.log(doc)
         doc.docChanges().forEach((change) => {
             if (change.type === "modified") {
                 document.getElementById('current-floor').innerHTML = change.doc.data().currentFloor;
+            }
+        });
+    }
+});
+
+onSnapshot(query(collection(db, "requests")), (doc) => {
+    if (doc) {
+        console.log(doc)
+        doc.docChanges().forEach((change) => {
+            if (change.type === "modified") {
+                let requests = [];
+                let elevator_ID = change.doc.data().elevatorID;
+                let requestPlayerID = change.doc.data().id;
+                getDocs(query(collection(db, "requests"), where("state", "in", ["awaiting", "on"]))).then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        requests.push(doc.data());
+                    });
+                    if (requestPlayerID !== playerID) {
+                        handleElevatorRequests2(elevator_ID, requests);
+                    }
+                })
             }
         });
     }
@@ -146,7 +168,7 @@ document.getElementById('1').addEventListener('click', () => {
     updateFloor(1);
 })
 document.getElementById('2').addEventListener('click', () => {
-    updateFloor(0);
+    updateFloor(2);
 })
 document.getElementById('3').addEventListener('click', () => {
     updateFloor(3);
@@ -217,12 +239,12 @@ function updateFloor(floor) {
         })
         //get requests and put them in an array
         let requests = [];
-        getDocs(query(collection(db, "requests"),where("state", "in", ["awaiting", "on"]))).then((querySnapshot) => {
+        getDocs(query(collection(db, "requests"), where("state", "in", ["awaiting", "on"]))).then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 requests.push(doc.data());
             });
 
-            handleElevatorRequests(elevator_ID,requests);
+            handleElevatorRequests(elevator_ID, requests);
         })
     }
 }
@@ -283,26 +305,35 @@ async function handleElevatorRequests(elevatorId, requests) {
     for (let request of requests) {
         let requestCurrentFloor = parseInt(request.currentFloor);
         let requestDestination = parseInt(request.goingToFloor);
+        let requestPlayerID = request.id;
+
 
         // **Step 1: Move to Passenger's Location**
         if (elevatorCurrentFloor !== requestCurrentFloor) {
             console.log(`Elevator ${elevatorId} moving to floor ${requestCurrentFloor} to pick up passenger...`);
             //show in html   <p id="elevator1state"></p>
-           //check if the elevator id 
-            if(elevatorId == "nEFOlhdgHbhcSWCJb5y3"){
+            //check if the elevator id 
+            if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
                 //clear html
                 document.getElementById('elevator1state').innerText = "";
-                document.getElementById('elevator1state').innerText = `Elevator A is moving to floor ${requestCurrentFloor} to pick up passenger...`;
+                getPlayerName(requestPlayerID).then(playerName => {
+                    document.getElementById('elevator1state').innerText = `Elevator A is moving to floor ${requestCurrentFloor} to pick up ${playerName}...`;
+                });
+
             }
-            if(elevatorId == "oAo68NfSDZm66YhHfSCM"){
+            if (elevatorId == "oAo68NfSDZm66YhHfSCM") {
                 //clear html
                 document.getElementById('elevator2state').innerText = "";
-                document.getElementById('elevator2state').innerText = `Elevator B is moving to floor ${requestCurrentFloor} to pick up passenger...`;
+                getPlayerName(requestPlayerID).then(playerName => {
+                    document.getElementById('elevator2state').innerText = `Elevator B is moving to floor ${requestCurrentFloor} to pick up ${playerName}...`;
+                });
             }
-            if(elevatorId == "ou45vwSmWIu7YjSvmKkM"){
+            if (elevatorId == "ou45vwSmWIu7YjSvmKkM") {
                 //clear html
                 document.getElementById('elevator3state').innerText = "";
-                document.getElementById('elevator3state').innerText = `Elevator C is moving to floor ${requestCurrentFloor} to pick up passenger...`;
+                getPlayerName(requestPlayerID).then(playerName => {
+                    document.getElementById('elevator3state').innerText = `Elevator C is moving to floor ${requestCurrentFloor} to pick up ${playerName}...`;
+                });
             }
             await moveElevatorSmoothly(elevatorId, elevatorCurrentFloor, requestCurrentFloor);
             elevatorCurrentFloor = requestCurrentFloor; // Update current floor after reaching
@@ -313,20 +344,26 @@ async function handleElevatorRequests(elevatorId, requests) {
         console.log(`Elevator ${elevatorId} stopped at floor ${requestCurrentFloor} for 8 seconds to pick up passenger.`);
         //show in html   <p id="elevator1state"></p>
         //check if the elevator id
-        if(elevatorId == "nEFOlhdgHbhcSWCJb5y3"){
+        if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
             //clear html
             document.getElementById('elevator1state').innerText = "";
-            document.getElementById('elevator1state').innerText = `Elevator A stopped at floor ${requestCurrentFloor} for 8 seconds to pick up passenger.`;
+            getPlayerName(requestPlayerID).then(playerName => {
+                document.getElementById('elevator1state').innerText = `Elevator A stopped at floor ${requestCurrentFloor} for 8 seconds to pick up ${playerName}.`;
+            });
         }
-        if(elevatorId == "oAo68NfSDZm66YhHfSCM"){
+        if (elevatorId == "oAo68NfSDZm66YhHfSCM") {
             //clear html   
             document.getElementById('elevator2state').innerText = "";
-            document.getElementById('elevator2state').innerText = `Elevator B stopped at floor ${requestCurrentFloor} for 8 seconds to pick up passenger.`;
+            getPlayerName(requestPlayerID).then(playerName => {
+                document.getElementById('elevator2state').innerText = `Elevator B stopped at floor ${requestCurrentFloor} for 8 seconds to pick up ${playerName}.`;
+            });
         }
-        if(elevatorId == "ou45vwSmWIu7YjSvmKkM"){
+        if (elevatorId == "ou45vwSmWIu7YjSvmKkM") {
             //clear html
             document.getElementById('elevator3state').innerText = "";
-            document.getElementById('elevator3state').innerText = `Elevator C stopped at floor ${requestCurrentFloor} for 8 seconds to pick up passenger.`;
+            getPlayerName(requestPlayerID).then(playerName => {
+                document.getElementById('elevator3state').innerText = `Elevator C stopped at floor ${requestCurrentFloor} for 8 seconds to pick up ${playerName}.`;
+            });
         }
         await new Promise(resolve => setTimeout(resolve, 8000)); // Stop for 8 seconds
 
@@ -335,59 +372,65 @@ async function handleElevatorRequests(elevatorId, requests) {
         await new Promise(resolve => setTimeout(resolve, 4000)); // Door closing animation delay
         //show in html   <p id="elevator1state"></p>
         //check if the elevator id
-        if(elevatorId == "nEFOlhdgHbhcSWCJb5y3"){
+        if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
             //clear html
             document.getElementById('elevator1state').innerText = "";
-            document.getElementById('elevator1state').innerText = `Elevator A closed doors after picking up passenger.`;
+            getPlayerName(requestPlayerID).then(playerName => {
+                document.getElementById('elevator1state').innerText = `Elevator A closed doors after picking up ${playerName}.`;
+            });
         }
-        if(elevatorId == "oAo68NfSDZm66YhHfSCM"){
+        if (elevatorId == "oAo68NfSDZm66YhHfSCM") {
             //clear html
             document.getElementById('elevator2state').innerText = "";
-            document.getElementById('elevator2state').innerText = `Elevator B closed doors after picking up passenger.`;
+            getPlayerName(requestPlayerID).then(playerName => {
+                document.getElementById('elevator2state').innerText = `Elevator B closed doors after picking up ${playerName}.`;
+            });
         }
-        if(elevatorId == "ou45vwSmWIu7YjSvmKkM"){
+        if (elevatorId == "ou45vwSmWIu7YjSvmKkM") {
             //clear html
             document.getElementById('elevator3state').innerText = "";
-            document.getElementById('elevator3state').innerText = `Elevator C closed doors after picking up passenger.`;
+            getPlayerName(requestPlayerID).then(playerName => {
+                document.getElementById('elevator3state').innerText = `Elevator C closed doors after picking up ${playerName}.`;
+            });
         }
 
         // **Step 4: Move to the Passenger’s Destination**
         console.log(`Elevator ${elevatorId} moving from ${requestCurrentFloor} to ${requestDestination}...`);
         //show in html   <p id="elevator1state"></p>
         //check if the elevator id
-        if(elevatorId == "nEFOlhdgHbhcSWCJb5y3"){
+        if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
             //clear html
             document.getElementById('elevator1state').innerText = "";
             document.getElementById('elevator1state').innerText = `Elevator A moving from ${requestCurrentFloor} to ${requestDestination}...`;
         }
-        if(elevatorId == "oAo68NfSDZm66YhHfSCM"){
+        if (elevatorId == "oAo68NfSDZm66YhHfSCM") {
             //clear html
             document.getElementById('elevator2state').innerText = "";
             document.getElementById('elevator2state').innerText = `Elevator B moving from ${requestCurrentFloor} to ${requestDestination}...`;
         }
-        if(elevatorId == "ou45vwSmWIu7YjSvmKkM"){
+        if (elevatorId == "ou45vwSmWIu7YjSvmKkM") {
             //clear html
             document.getElementById('elevator3state').innerText = "";
             document.getElementById('elevator3state').innerText = `Elevator C moving from ${requestCurrentFloor} to ${requestDestination}...`;
         }
         await moveElevatorSmoothly(elevatorId, requestCurrentFloor, requestDestination);
-        
+
         // **Step 5: Open doors for passenger drop-off**
         openElevator(elevatorId);
         console.log(`Passenger dropped off at floor ${requestDestination}. Waiting 8 seconds before closing doors.`);
         //show in html   <p id="elevator1state"></p>
         //check if the elevator id
-        if(elevatorId == "nEFOlhdgHbhcSWCJb5y3"){
+        if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
             //clear html
             document.getElementById('elevator1state').innerText = "";
             document.getElementById('elevator1state').innerText = `Passenger dropped off at floor ${requestDestination}. Waiting 8 seconds before closing doors.`;
         }
-        if(elevatorId == "oAo68NfSDZm66YhHfSCM"){
+        if (elevatorId == "oAo68NfSDZm66YhHfSCM") {
             //clear html
             document.getElementById('elevator2state').innerText = "";
             document.getElementById('elevator2state').innerText = `Passenger dropped off at floor ${requestDestination}. Waiting 8 seconds before closing doors.`;
         }
-        if(elevatorId == "ou45vwSmWIu7YjSvmKkM"){
+        if (elevatorId == "ou45vwSmWIu7YjSvmKkM") {
             //clear html
             document.getElementById('elevator3state').innerText = "";
             document.getElementById('elevator3state').innerText = `Passenger dropped off at floor ${requestDestination}. Waiting 8 seconds before closing doors.`;
@@ -399,20 +442,26 @@ async function handleElevatorRequests(elevatorId, requests) {
         await new Promise(resolve => setTimeout(resolve, 4000)); // Door closing animation delay
         //show in html   <p id="elevator1state"></p>
         //check if the elevator id
-        if(elevatorId == "nEFOlhdgHbhcSWCJb5y3"){
+        if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
             //clear html
             document.getElementById('elevator1state').innerText = "";
-            document.getElementById('elevator1state').innerText = `Elevator A closed doors after dropping off passenger.`;
+            getPlayerName(requestPlayerID).then(playerName => {
+                document.getElementById('elevator1state').innerText = `Elevator A closed doors after dropping off ${playerName}.`;
+            });
         }
-        if(elevatorId == "oAo68NfSDZm66YhHfSCM"){
+        if (elevatorId == "oAo68NfSDZm66YhHfSCM") {
             //clear html
             document.getElementById('elevator2state').innerText = "";
-            document.getElementById('elevator2state').innerText = `Elevator B closed doors after dropping off passenger.`;
+            getPlayerName(requestPlayerID).then(playerName => {
+                document.getElementById('elevator2state').innerText = `Elevator B closed doors after dropping off ${playerName}.`;
+            });
         }
-        if(elevatorId == "ou45vwSmWIu7YjSvmKkM"){
+        if (elevatorId == "ou45vwSmWIu7YjSvmKkM") {
             //clear html
             document.getElementById('elevator3state').innerText = "";
-            document.getElementById('elevator3state').innerText = `Elevator C closed doors after dropping off passenger.`;
+            getPlayerName(requestPlayerID).then(playerName => {
+                document.getElementById('elevator3state').innerText = `Elevator C closed doors after dropping off ${playerName}.`;
+            });
         }
 
         // **Step 7: Update Firestore to mark request as complete**
@@ -425,7 +474,220 @@ async function handleElevatorRequests(elevatorId, requests) {
         elevatorCurrentFloor = requestDestination;
     }
 }
+async function handleElevatorRequests2(elevatorId, requests) {
+    if (requests.length === 0) return; // No requests to process
 
+    const elevatorRef = doc(db, "elevators", elevatorId);
+    const elevatorSnap = await getDoc(elevatorRef);
+    if (!elevatorSnap.exists()) return;
+
+    let elevatorData = elevatorSnap.data();
+    let elevatorCurrentFloor = elevatorData.floor;
+
+    //filter requests to only those with the same elevator ID
+    requests = requests.filter(request => request.elevatorID === elevatorId);
+
+    // Process each request individually to ensure correct order
+    for (let request of requests) {
+        let requestCurrentFloor = parseInt(request.currentFloor);
+        let requestDestination = parseInt(request.goingToFloor);
+        let requestPlayerID = request.id;
+
+
+        // **Step 1: Move to Passenger's Location**
+        if (elevatorCurrentFloor !== requestCurrentFloor) {
+            console.log(`Elevator ${elevatorId} moving to floor ${requestCurrentFloor} to pick up passenger...`);
+            //show in html   <p id="elevator1state"></p>
+            //check if the elevator id 
+            if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
+                //clear html
+                document.getElementById('elevator1state').innerText = "";
+                getPlayerName(requestPlayerID).then(playerName => {
+                    document.getElementById('elevator1state').innerText = `Elevator A is moving to floor ${requestCurrentFloor} to pick up ${playerName}...`;
+                });
+
+            }
+            if (elevatorId == "oAo68NfSDZm66YhHfSCM") {
+                //clear html
+                document.getElementById('elevator2state').innerText = "";
+                getPlayerName(requestPlayerID).then(playerName => {
+                    document.getElementById('elevator2state').innerText = `Elevator B is moving to floor ${requestCurrentFloor} to pick up ${playerName}...`;
+                });
+            }
+            if (elevatorId == "ou45vwSmWIu7YjSvmKkM") {
+                //clear html
+                document.getElementById('elevator3state').innerText = "";
+                getPlayerName(requestPlayerID).then(playerName => {
+                    document.getElementById('elevator3state').innerText = `Elevator C is moving to floor ${requestCurrentFloor} to pick up ${playerName}...`;
+                });
+            }
+            await moveElevatorSmoothly2(elevatorId, elevatorCurrentFloor, requestCurrentFloor);
+            // elevatorCurrentFloor = requestCurrentFloor; // Update current floor after reaching
+        }
+
+        // **Step 2: Open doors for passenger**
+        console.log(`Elevator ${elevatorId} stopped at floor ${requestCurrentFloor} for 8 seconds to pick up passenger.`);
+        //show in html   <p id="elevator1state"></p>
+        //check if the elevator id
+        if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
+            if (parseInt(document.getElementById("floorElevator1").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
+                openElevator(elevatorId);
+            }
+            //clear html
+            document.getElementById('elevator1state').innerText = "";
+            getPlayerName(requestPlayerID).then(playerName => {
+                document.getElementById('elevator1state').innerText = `Elevator A stopped at floor ${requestCurrentFloor} for 8 seconds to pick up ${playerName}.`;
+            });
+        }
+        if (elevatorId == "oAo68NfSDZm66YhHfSCM") {
+            if (parseInt(document.getElementById("floorElevator2").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
+                openElevator(elevatorId);
+            }
+            //clear html   
+            document.getElementById('elevator2state').innerText = "";
+            getPlayerName(requestPlayerID).then(playerName => {
+                document.getElementById('elevator2state').innerText = `Elevator B stopped at floor ${requestCurrentFloor} for 8 seconds to pick up ${playerName}.`;
+            });
+        }
+        if (elevatorId == "ou45vwSmWIu7YjSvmKkM") {
+            if (parseInt(document.getElementById("floorElevator3").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
+                openElevator(elevatorId);
+            }
+            //clear html
+            document.getElementById('elevator3state').innerText = "";
+            getPlayerName(requestPlayerID).then(playerName => {
+                document.getElementById('elevator3state').innerText = `Elevator C stopped at floor ${requestCurrentFloor} for 8 seconds to pick up ${playerName}.`;
+            });
+        }
+        await new Promise(resolve => setTimeout(resolve, 8000)); // Stop for 8 seconds
+
+        // **Step 3: Close doors after pickup**
+       
+        //show in html   <p id="elevator1state"></p>
+        //check if the elevator id
+        if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
+            if (parseInt(document.getElementById("floorElevator1").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
+                closeElevator(elevatorId);
+            }
+            //clear html
+            document.getElementById('elevator1state').innerText = "";
+            getPlayerName(requestPlayerID).then(playerName => {
+                document.getElementById('elevator1state').innerText = `Elevator A closed doors after picking up ${playerName}.`;
+            });
+        }
+        if (elevatorId == "oAo68NfSDZm66YhHfSCM") {
+            if (parseInt(document.getElementById("floorElevator2").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
+                closeElevator(elevatorId);
+            }
+            //clear html
+            document.getElementById('elevator2state').innerText = "";
+            getPlayerName(requestPlayerID).then(playerName => {
+                document.getElementById('elevator2state').innerText = `Elevator B closed doors after picking up ${playerName}.`;
+            });
+        }
+        if (elevatorId == "ou45vwSmWIu7YjSvmKkM") {
+            if (parseInt(document.getElementById("floorElevator3").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
+                closeElevator(elevatorId);
+            }
+            //clear html
+            document.getElementById('elevator3state').innerText = "";
+            getPlayerName(requestPlayerID).then(playerName => {
+                document.getElementById('elevator3state').innerText = `Elevator C closed doors after picking up ${playerName}.`;
+            });
+        }
+        await new Promise(resolve => setTimeout(resolve, 4000)); // Door closing animation delay
+        // **Step 4: Move to the Passenger’s Destination**
+        console.log(`Elevator ${elevatorId} moving from ${requestCurrentFloor} to ${requestDestination}...`);
+        //show in html   <p id="elevator1state"></p>
+        //check if the elevator id
+        if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
+            //clear html
+            document.getElementById('elevator1state').innerText = "";
+            document.getElementById('elevator1state').innerText = `Elevator A moving from ${requestCurrentFloor} to ${requestDestination}...`;
+        }
+        if (elevatorId == "oAo68NfSDZm66YhHfSCM") {
+            //clear html
+            document.getElementById('elevator2state').innerText = "";
+            document.getElementById('elevator2state').innerText = `Elevator B moving from ${requestCurrentFloor} to ${requestDestination}...`;
+        }
+        if (elevatorId == "ou45vwSmWIu7YjSvmKkM") {
+            //clear html
+            document.getElementById('elevator3state').innerText = "";
+            document.getElementById('elevator3state').innerText = `Elevator C moving from ${requestCurrentFloor} to ${requestDestination}...`;
+        }
+        await moveElevatorSmoothly2(elevatorId, requestCurrentFloor, requestDestination);
+
+        // **Step 5: Open doors for passenger drop-off**
+       
+        
+       
+        console.log(`Passenger dropped off at floor ${requestDestination}. Waiting 8 seconds before closing doors.`);
+        //show in html   <p id="elevator1state"></p>
+        //check if the elevator id
+        if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
+            if (parseInt(document.getElementById("floorElevator1").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
+                openElevator(elevatorId);
+            }
+            //clear html
+            document.getElementById('elevator1state').innerText = "";
+            document.getElementById('elevator1state').innerText = `Passenger dropped off at floor ${requestDestination}. Waiting 8 seconds before closing doors.`;
+        }
+        if (elevatorId == "oAo68NfSDZm66YhHfSCM") {
+            if (parseInt(document.getElementById("floorElevator2").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
+                openElevator(elevatorId);
+            }
+            //clear html
+            document.getElementById('elevator2state').innerText = "";
+            document.getElementById('elevator2state').innerText = `Passenger dropped off at floor ${requestDestination}. Waiting 8 seconds before closing doors.`;
+        }
+        if (elevatorId == "ou45vwSmWIu7YjSvmKkM") {
+            if (parseInt(document.getElementById("floorElevator3").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
+                openElevator(elevatorId);
+            }
+            //clear html
+            document.getElementById('elevator3state').innerText = "";
+            document.getElementById('elevator3state').innerText = `Passenger dropped off at floor ${requestDestination}. Waiting 8 seconds before closing doors.`;
+        }
+        await new Promise(resolve => setTimeout(resolve, 8000));
+
+        // **Step 6: Close doors after drop-off**
+        await new Promise(resolve => setTimeout(resolve, 4000)); // Door closing animation delay
+        //show in html   <p id="elevator1state"></p>
+        //check if the elevator id
+        if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
+            if (parseInt(document.getElementById("floorElevator1").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
+                closeElevator(elevatorId);
+            }
+            //clear html
+            document.getElementById('elevator1state').innerText = "";
+            getPlayerName(requestPlayerID).then(playerName => {
+                document.getElementById('elevator1state').innerText = `Elevator A closed doors after dropping off ${playerName}.`;
+            });
+        }
+        if (elevatorId == "oAo68NfSDZm66YhHfSCM") {
+            if (parseInt(document.getElementById("floorElevator2").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
+                closeElevator(elevatorId);
+            }
+            //clear html
+            document.getElementById('elevator2state').innerText = "";
+            getPlayerName(requestPlayerID).then(playerName => {
+                document.getElementById('elevator2state').innerText = `Elevator B closed doors after dropping off ${playerName}.`;
+            });
+        }
+        if (elevatorId == "ou45vwSmWIu7YjSvmKkM") {
+            //clear html
+            if (parseInt(document.getElementById("floorElevator3").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
+                closeElevator(elevatorId);
+            }
+            document.getElementById('elevator3state').innerText = "";
+            getPlayerName(requestPlayerID).then(playerName => {
+                document.getElementById('elevator3state').innerText = `Elevator C closed doors after dropping off ${playerName}.`;
+            });
+        }
+
+        //elevatorCurrentFloor = requestDestination;
+    }
+}
 // Function to move the elevator smoothly through each floor
 async function moveElevatorSmoothly(elevatorId, startFloor, endFloor) {
     document.getElementById("elevatorMusic").play();
@@ -441,7 +703,15 @@ async function moveElevatorSmoothly(elevatorId, startFloor, endFloor) {
         await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds per floor
 
         console.log(`Elevator ${elevatorId} reached floor ${floor}`);
-
+        if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
+            document.getElementById("floorElevator1").innerText = floor;
+        }
+        if (elevatorId == "oAo68NfSDZm66YhHfSCM") {
+            document.getElementById("floorElevator2").innerText = floor;
+        }
+        if (elevatorId == "ou45vwSmWIu7YjSvmKkM") {
+            document.getElementById("floorElevator3").innerText = floor;
+        }
         // Update Firestore in real-time
         await updateDoc(elevatorRef, {
             floor: floor,
@@ -453,6 +723,42 @@ async function moveElevatorSmoothly(elevatorId, startFloor, endFloor) {
     }
     document.getElementById("elevatorMusic").pause();
 }
+async function moveElevatorSmoothly2(elevatorId, startFloor, endFloor) {
+    //document.getElementById("elevatorMusic").play();
+    const elevatorRef = doc(db, "elevators", elevatorId);
+    let direction = startFloor < endFloor ? "up" : "down";
+    console.log(`Moving elevator ${elevatorId} from floor ${startFloor} to ${endFloor}...`);
+
+    let floors = direction === "up"
+        ? Array.from({ length: endFloor - startFloor + 1 }, (_, i) => startFloor + i)
+        : Array.from({ length: startFloor - endFloor + 1 }, (_, i) => startFloor - i);
+
+    for (let floor of floors) {
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds per floor
+
+        console.log(`Elevator ${elevatorId} reached floor ${floor}`);
+
+        if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
+            document.getElementById("floorElevator1").innerText = floor;
+        }
+        if (elevatorId == "oAo68NfSDZm66YhHfSCM") {
+            document.getElementById("floorElevator2").innerText = floor;
+        }
+        if (elevatorId == "ou45vwSmWIu7YjSvmKkM") {
+            document.getElementById("floorElevator3").innerText = floor;
+        }
+
+        // // Update Firestore in real-time
+        // await updateDoc(elevatorRef, {
+        //     floor: floor,
+        //     direction: direction
+        // });
+
+        // Update UI to show the elevator moving (if applicable)
+        updateElevatorUI(elevatorId, floor);
+    }
+   // document.getElementById("elevatorMusic").pause();
+}
 
 // Function to update the UI (if you have an elevator element)
 function updateElevatorUI(elevatorId, floor) {
@@ -462,8 +768,26 @@ function updateElevatorUI(elevatorId, floor) {
     }
 }
 
+async function getPlayerName(playerID) {
+    try {
+        const docRef = doc(db, "players", playerID);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            return docSnap.data().name; // Assuming the player's name is stored under the 'name' field
+        } else {
+            console.log("No such document!");
+            return null;
+        }
+    } catch (error) {
+        console.error("Error getting document:", error);
+        return null;
+    }
+}
 
-
+// Example usage
+getPlayerName("ZN54YOOCDuNbIa9L9yX4").then(playerName => {
+    console.log(playerName);
+});
 
 
 
