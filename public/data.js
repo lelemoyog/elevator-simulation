@@ -24,37 +24,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 let playerID = localStorage.getItem("playerID");
 
-// onSnapshot(query(collection(db, "elevators"), where("id", "==", "nEFOlhdgHbhcSWCJb5y3")), (doc) => {
-//     if (doc) {
-//         doc.docChanges().forEach((change) => {
-//             if (change.type === "modified") {
-//                 document.getElementById("directionElevato1").innerHTML = "Going " + change.doc.data().direction;
-//                 document.getElementById("floorElevator1").innerHTML = change.doc.data().floor;
-//             }
-//         });
-//     }
-// });
-// onSnapshot(query(collection(db, "elevators"), where("id", "==", "oAo68NfSDZm66YhHfSCM")), (doc) => {
-//     if (doc) {
-//         doc.docChanges().forEach((change) => {
-//             if (change.type === "modified") {
-//                 document.getElementById("directionElevato2").innerHTML = "Going " + change.doc.data().direction;
-//                 document.getElementById("floorElevator2").innerHTML = change.doc.data().floor;
-//             }
-//         });
-//     }
-// });
 
-// onSnapshot(query(collection(db, "elevators"), where("id", "==", "ou45vwSmWIu7YjSvmKkM")), (doc) => {
-//     if (doc) {
-//         doc.docChanges().forEach((change) => {
-//             if (change.type === "modified") {
-//                 document.getElementById("directionElevato3").innerHTML = "Going " + change.doc.data().direction;
-//                 document.getElementById("floorElevator3").innerHTML = change.doc.data().floor;
-//             }
-//         });
-//     }
-// });
 
 onSnapshot(query(collection(db, "requests"), where("id", "==", playerID)), (doc) => {
     if (doc) {
