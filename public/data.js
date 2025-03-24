@@ -779,17 +779,19 @@ function getMostEfficientElevator(elevatorA, elevatorB, elevatorC, accessingFloo
 
     // Determine the most efficient elevator based on the distance and the door's range
     let mostEfficientElevator = null;
-    let minDistance = Infinity;
+    let minDistance = 5;
+    let minDistance2 = 8;
+    let minDistance3 = 10;
 
     if (canServeA && distanceA < minDistance) {
         minDistance = distanceA;
         mostEfficientElevator = 'A';
     }
-    if (canServeB && distanceB < minDistance) {
+    if (canServeB && distanceB < minDistance2) {
         minDistance = distanceB;
         mostEfficientElevator = 'B';
     }
-    if (canServeC && distanceC < minDistance) {
+    if (canServeC && distanceC < minDistance3) {
         minDistance = distanceC;
         mostEfficientElevator = 'C';
     }
