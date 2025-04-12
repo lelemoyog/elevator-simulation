@@ -24,7 +24,34 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 let playerID = localStorage.getItem("playerID");
 
-
+onSnapshot(query(collection(db, "elevators"), where("id", "==", "nEFOlhdgHbhcSWCJb5y3")), (doc) => {
+     if (doc) {
+         doc.docChanges().forEach((change) => {
+             if (change.type === "modified") {
+                 document.getElementById("directionElevato1").innerHTML = "Going " + change.doc.data().direction;
+             }
+         });
+     }
+ });
+ onSnapshot(query(collection(db, "elevators"), where("id", "==", "oAo68NfSDZm66YhHfSCM")), (doc) => {
+     if (doc) {
+         doc.docChanges().forEach((change) => {
+             if (change.type === "modified") {
+                 document.getElementById("directionElevato2").innerHTML = "Going " + change.doc.data().direction;
+             }
+         });
+     }
+ });
+ 
+ onSnapshot(query(collection(db, "elevators"), where("id", "==", "ou45vwSmWIu7YjSvmKkM")), (doc) => {
+     if (doc) {
+         doc.docChanges().forEach((change) => {
+             if (change.type === "modified") {
+                 document.getElementById("directionElevato3").innerHTML = "Going " + change.doc.data().direction;
+             }
+         });
+     }
+ });
 
 onSnapshot(query(collection(db, "requests"), where("id", "==", playerID)), (doc) => {
     if (doc) {
@@ -257,6 +284,33 @@ function closeElevator(elevatorId) {
     }, 4000);
 }
 
+//function pickup passenger
+function pickupPassenger(elevatorId) {
+    let elevatorElement = document.getElementById(elevatorMapping[elevatorId]);
+    if (!elevatorElement) return;
+    document.getElementById("elevatorAudio").play();
+    elevatorElement.src = "assets/img/elevatorPickUp.gif";
+
+    // Change to closed state after 4 seconds
+    setTimeout(() => {
+        elevatorElement.src = "assets/img/elevator-state-4-closed.jpg";
+        document.getElementById("elevatorAudio2").play();
+    }, 8000);
+}
+
+// function dropoff passenger
+function dropoffPassenger(elevatorId) {
+    let elevatorElement = document.getElementById(elevatorMapping[elevatorId]);
+    if (!elevatorElement) return;
+    document.getElementById("elevatorAudio").play();
+    elevatorElement.src = "assets/img/elevatorDropOff.gif";
+
+    // Change to closed state after 4 seconds
+    setTimeout(() => {
+        elevatorElement.src = "assets/img/elevator-state-4-closed.jpg";
+    }, 9000);
+}
+
 // Function to handle multiple elevator requests intelligently
 async function handleElevatorRequests(elevatorId, requests) {
     if (requests.length === 0) return; // No requests to process
@@ -310,7 +364,7 @@ async function handleElevatorRequests(elevatorId, requests) {
         }
 
         // **Step 2: Open doors for passenger**
-        openElevator(elevatorId);
+        pickupPassenger(elevatorId);
         console.log(`Elevator ${elevatorId} stopped at floor ${requestCurrentFloor} for 8 seconds to pick up passenger.`);
         //show in html   <p id="elevator1state"></p>
         //check if the elevator id
@@ -338,8 +392,8 @@ async function handleElevatorRequests(elevatorId, requests) {
         await new Promise(resolve => setTimeout(resolve, 8000)); // Stop for 8 seconds
 
         // **Step 3: Close doors after pickup**
-        closeElevator(elevatorId);
-        await new Promise(resolve => setTimeout(resolve, 4000)); // Door closing animation delay
+        //closeElevator(elevatorId);
+        //await new Promise(resolve => setTimeout(resolve, 4000)); // Door closing animation delay
         //show in html   <p id="elevator1state"></p>
         //check if the elevator id
         if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
@@ -386,7 +440,7 @@ async function handleElevatorRequests(elevatorId, requests) {
         await moveElevatorSmoothly(elevatorId, requestCurrentFloor, requestDestination);
 
         // **Step 5: Open doors for passenger drop-off**
-        openElevator(elevatorId);
+        dropoffPassenger(elevatorId);
         console.log(`Passenger dropped off at floor ${requestDestination}. Waiting 8 seconds before closing doors.`);
         //show in html   <p id="elevator1state"></p>
         //check if the elevator id
@@ -408,8 +462,8 @@ async function handleElevatorRequests(elevatorId, requests) {
         await new Promise(resolve => setTimeout(resolve, 8000));
 
         // **Step 6: Close doors after drop-off**
-        closeElevator(elevatorId);
-        await new Promise(resolve => setTimeout(resolve, 4000)); // Door closing animation delay
+        //closeElevator(elevatorId);
+        //await new Promise(resolve => setTimeout(resolve, 4000)); // Door closing animation delay
         //show in html   <p id="elevator1state"></p>
         //check if the elevator id
         if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
@@ -779,19 +833,17 @@ function getMostEfficientElevator(elevatorA, elevatorB, elevatorC, accessingFloo
 
     // Determine the most efficient elevator based on the distance and the door's range
     let mostEfficientElevator = null;
-    let minDistance = 5;
-    let minDistance2 = 8;
-    let minDistance3 = 10;
+    let minDistance = Infinity;
 
     if (canServeA && distanceA < minDistance) {
         minDistance = distanceA;
         mostEfficientElevator = 'A';
     }
-    if (canServeB && distanceB < minDistance2) {
+    if (canServeB && distanceB < minDistance) {
         minDistance = distanceB;
         mostEfficientElevator = 'B';
     }
-    if (canServeC && distanceC < minDistance3) {
+    if (canServeC && distanceC < minDistance) {
         minDistance = distanceC;
         mostEfficientElevator = 'C';
     }
