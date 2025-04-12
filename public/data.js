@@ -307,6 +307,12 @@ function dropoffPassenger(elevatorId) {
 
     // Change to closed state after 4 seconds
     setTimeout(() => {
+        document.getElementById('elevator_up1').src = "assets/img/elevator_up.png"
+        document.getElementById('elevator_down1').src = "assets/img/elevator_down.png"
+        document.getElementById('elevator_up2').src = "assets/img/elevator_up.png"
+        document.getElementById('elevator_down2').src = "assets/img/elevator_down.png"
+        document.getElementById('elevator_up3').src = "assets/img/elevator_up.png"
+        document.getElementById('elevator_down3').src = "assets/img/elevator_down.png"
         elevatorElement.src = "assets/img/elevator-state-4-closed.jpg";
     }, 9000);
 }
@@ -555,7 +561,7 @@ async function handleElevatorRequests2(elevatorId, requests) {
         //check if the elevator id
         if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
             if (parseInt(document.getElementById("floorElevator1").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
-                openElevator(elevatorId);
+                pickupPassenger(elevatorId);
             }
             //clear html
             document.getElementById('elevator1state').innerText = "";
@@ -565,7 +571,7 @@ async function handleElevatorRequests2(elevatorId, requests) {
         }
         if (elevatorId == "oAo68NfSDZm66YhHfSCM") {
             if (parseInt(document.getElementById("floorElevator2").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
-                openElevator(elevatorId);
+                pickupPassenger(elevatorId);
             }
             //clear html   
             document.getElementById('elevator2state').innerText = "";
@@ -575,7 +581,7 @@ async function handleElevatorRequests2(elevatorId, requests) {
         }
         if (elevatorId == "ou45vwSmWIu7YjSvmKkM") {
             if (parseInt(document.getElementById("floorElevator3").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
-                openElevator(elevatorId);
+                pickupPassenger(elevatorId);
             }
             //clear html
             document.getElementById('elevator3state').innerText = "";
@@ -591,7 +597,7 @@ async function handleElevatorRequests2(elevatorId, requests) {
         //check if the elevator id
         if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
             if (parseInt(document.getElementById("floorElevator1").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
-                closeElevator(elevatorId);
+               // closeElevator(elevatorId);
             }
             //clear html
             document.getElementById('elevator1state').innerText = "";
@@ -601,7 +607,7 @@ async function handleElevatorRequests2(elevatorId, requests) {
         }
         if (elevatorId == "oAo68NfSDZm66YhHfSCM") {
             if (parseInt(document.getElementById("floorElevator2").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
-                closeElevator(elevatorId);
+                //closeElevator(elevatorId);
             }
             //clear html
             document.getElementById('elevator2state').innerText = "";
@@ -611,7 +617,7 @@ async function handleElevatorRequests2(elevatorId, requests) {
         }
         if (elevatorId == "ou45vwSmWIu7YjSvmKkM") {
             if (parseInt(document.getElementById("floorElevator3").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
-                closeElevator(elevatorId);
+                //closeElevator(elevatorId);
             }
             //clear html
             document.getElementById('elevator3state').innerText = "";
@@ -619,7 +625,7 @@ async function handleElevatorRequests2(elevatorId, requests) {
                 document.getElementById('elevator3state').innerText = `Elevator C closed doors after picking up ${playerName}.`;
             });
         }
-        await new Promise(resolve => setTimeout(resolve, 4000)); // Door closing animation delay
+        //await new Promise(resolve => setTimeout(resolve, 4000)); // Door closing animation delay
         // **Step 4: Move to the Passenger’s Destination**
         console.log(`Elevator ${elevatorId} moving from ${requestCurrentFloor} to ${requestDestination}...`);
         //show in html   <p id="elevator1state"></p>
@@ -650,7 +656,7 @@ async function handleElevatorRequests2(elevatorId, requests) {
         //check if the elevator id
         if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
             if (parseInt(document.getElementById("floorElevator1").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
-                openElevator(elevatorId);
+                dropoffPassenger(elevatorId);
             }
             //clear html
             document.getElementById('elevator1state').innerText = "";
@@ -658,7 +664,7 @@ async function handleElevatorRequests2(elevatorId, requests) {
         }
         if (elevatorId == "oAo68NfSDZm66YhHfSCM") {
             if (parseInt(document.getElementById("floorElevator2").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
-                openElevator(elevatorId);
+                dropoffPassenger(elevatorId);
             }
             //clear html
             document.getElementById('elevator2state').innerText = "";
@@ -666,7 +672,7 @@ async function handleElevatorRequests2(elevatorId, requests) {
         }
         if (elevatorId == "ou45vwSmWIu7YjSvmKkM") {
             if (parseInt(document.getElementById("floorElevator3").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
-                openElevator(elevatorId);
+                dropoffPassenger(elevatorId);
             }
             //clear html
             document.getElementById('elevator3state').innerText = "";
@@ -675,12 +681,12 @@ async function handleElevatorRequests2(elevatorId, requests) {
         await new Promise(resolve => setTimeout(resolve, 8000));
 
         // **Step 6: Close doors after drop-off**
-        await new Promise(resolve => setTimeout(resolve, 4000)); // Door closing animation delay
+        //await new Promise(resolve => setTimeout(resolve, 4000)); // Door closing animation delay
         //show in html   <p id="elevator1state"></p>
         //check if the elevator id
         if (elevatorId == "nEFOlhdgHbhcSWCJb5y3") {
             if (parseInt(document.getElementById("floorElevator1").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
-                closeElevator(elevatorId);
+                //closeElevator(elevatorId);
             }
             //clear html
             document.getElementById('elevator1state').innerText = "";
@@ -690,7 +696,7 @@ async function handleElevatorRequests2(elevatorId, requests) {
         }
         if (elevatorId == "oAo68NfSDZm66YhHfSCM") {
             if (parseInt(document.getElementById("floorElevator2").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
-                closeElevator(elevatorId);
+                //closeElevator(elevatorId);
             }
             //clear html
             document.getElementById('elevator2state').innerText = "";
@@ -701,7 +707,7 @@ async function handleElevatorRequests2(elevatorId, requests) {
         if (elevatorId == "ou45vwSmWIu7YjSvmKkM") {
             //clear html
             if (parseInt(document.getElementById("floorElevator3").innerText) == parseInt(document.getElementById("current-floor").innerText)) {
-                closeElevator(elevatorId);
+               // closeElevator(elevatorId);
             }
             document.getElementById('elevator3state').innerText = "";
             getPlayerName(requestPlayerID).then(playerName => {
