@@ -9,13 +9,13 @@ import { getFirestore, enableIndexedDbPersistence, addDoc, collection, getDocs, 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: "AIzaSyD3UWGcYo66AuqF3CJO_GpaWZt7jjD_bso",
-    authDomain: "elevetor-sim.firebaseapp.com",
-    projectId: "elevetor-sim",
-    storageBucket: "elevetor-sim.firebasestorage.app",
-    messagingSenderId: "941580080164",
-    appId: "1:941580080164:web:a2d9de1fa8fc671e3634b1",
-    measurementId: "G-4M3RTT4KNX"
+  apiKey: "AIzaSyB2EfZzOluMUohSQ_GAcUSTMiSHFnT-hCU",
+  authDomain: "elevator-simulation.firebaseapp.com",
+  projectId: "elevator-simulation",
+  storageBucket: "elevator-simulation.firebasestorage.app",
+  messagingSenderId: "588730315599",
+  appId: "1:588730315599:web:b0adc346bfc8a3c7a7cb3a",
+  measurementId: "G-0CN1JQFG57"
 };
 
 
